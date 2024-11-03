@@ -1,0 +1,4 @@
+resource_group_name   = "rg-teentrego-devops"
+storage_account_name  = "stteentregotfstate"
+container_name        = "tfstate-prod"
+key                   = "terraform.tfstate"

@@ -1,0 +1,5 @@
+env           = "prod"
+region        = "brazilsouth"
+vnet_cidr     = "10.0.0.0/16"
+firewall_policy = "your-firewall-policy-id"
+resource_group_name = "rg-teentrego-${env}"
