@@ -41,13 +41,33 @@ variable "gateway_subnet_cidr" {
   default     = "10.0.5.0/24" # Certifique-se de que está dentro do intervalo da VNet
 }
 
+variable "sec_subnet_cidr" {
+  description = "Prefixo de endereço (CIDR) para a subnet de segurança do Key Vault"
+  type        = string
+  default     = "10.0.6.0/24"
+}
 
 
+variable "subscription_id" { 
+  description = "ID da Assinatura do Azure"
+  type        = string
+}
+
+variable "tenant_id" {
+  description = "ID do Tenant do Azure AD"
+  type        = string
+}
+
+variable "admin_object_id" {
+  description = "Object ID do administrador para acesso ao Key Vault"
+  type        = string
+}
 
 variable "firewall_policy" {
   description = "Firewall policy for Azure Firewall"
   type        = string
 }
+
 variable "resource_group_name" {
   description = "Nome do grupo de recursos onde os recursos serão criados"
   type        = string

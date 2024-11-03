@@ -4,8 +4,10 @@ terraform {
 
 provider "azurerm" {
   features {}
-  subscription_id = "150c7079-aebb-4733-a9c7-5829324154ce"
+  subscription_id = var.subscription_id
 }
+
+
 
 # Create RG
 resource "azurerm_resource_group" "rg" {
@@ -49,6 +51,17 @@ module "ml_subnet" {
   resource_group_name = azurerm_resource_group.rg.name
   depends_on          = [module.vnet]
 }
+
+# Criação da Subnet dedicada para o Key Vault
+module "sec_subnet" {
+  source              = "./modules/sec_subnet"
+  name                = "snet-brs-teentrego-sec-${var.env}"
+  vnet_name           = module.vnet.vnet_name
+  address_space       = var.sec_subnet_cidr  # Prefixo de IP específico para a subnet de segurança
+  resource_group_name = azurerm_resource_group.rg.name
+  service_endpoints   = ["Microsoft.KeyVault"]  # Adiciona o Service Endpoint para Key Vault
+  depends_on          = [module.vnet]
+} 
 
 # Subnet para o Azure Firewall
 module "firewall_subnet" {
@@ -107,6 +120,20 @@ module "firewall" {
     azurerm_firewall_policy.example,
     module.firewall_subnet,
     azurerm_public_ip.public_ip
+  ]
+}
+
+module "keyvault" {
+  source                = "./modules/keyvault"
+  env                   = var.env
+  resource_group_name   = azurerm_resource_group.rg.name
+  region                = var.region
+  tenant_id             = var.tenant_id
+  admin_object_id       = var.admin_object_id
+  allowed_subnet_ids    = [module.sec_subnet.subnet_id]  # Permitir apenas a nova subnet de segurança
+
+  depends_on = [
+    azurerm_resource_group.rg
   ]
 }
 
